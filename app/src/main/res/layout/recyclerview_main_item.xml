@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:a="http://schemas.android.com/apk/res/android"
+    a:layout_width="match_parent"
+    a:layout_height="72dp"
+    a:foreground="?android:attr/selectableItemBackground">
+
+
+    <RelativeLayout
+        a:id="@+id/main_item"
+        a:layout_width="match_parent"
+        a:layout_height="match_parent"
+        a:background="#FAFAFA">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            a:id="@+id/item_image"
+            a:layout_width="40dp"
+            a:layout_height="40dp"
+            a:src="@drawable/boy"
+            a:padding="8dp"
+            a:layout_marginTop="16dp"
+            a:layout_marginBottom="16dp"
+            a:layout_marginStart="16dp"/>
+
+        <ImageButton
+            a:id="@+id/item_optionButton"
+            a:layout_width="40dp"
+            a:layout_height="40dp"
+            a:src="@drawable/ic_info_white_48dp"
+            a:background="@android:color/transparent"
+            a:tint="#b2b2b2"
+            a:scaleType="fitXY"
+            a:padding="8dp"
+            a:layout_margin="16dp"
+            a:layout_alignParentEnd="true"
+            />
+
+        <LinearLayout
+            a:layout_marginStart="16dp"
+            a:layout_width="match_parent"
+            a:layout_height="wrap_content"
+            a:layout_toEndOf="@id/item_image"
+            a:layout_toStartOf="@id/item_optionButton"
+            a:layout_centerVertical="true"
+            a:orientation="vertical">
+
+            <TextView
+                a:id="@+id/item_title"
+                a:maxLines="1"
+                a:ellipsize="middle"
+                a:layout_width="match_parent"
+                a:layout_height="wrap_content"
+                a:text="@string/app_name"
+                a:textColor="#212121"
+                a:textSize="16sp" />
+
+            <TextView
+                a:id="@+id/item_subtitle"
+                a:maxLines="1"
+                a:ellipsize="end"
+                a:layout_width="wrap_content"
+                a:layout_height="wrap_content"
+                a:text="@string/app_name"
+                a:textColor="#727272"
+                a:textSize="14sp"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <!--View
+        a:layout_width="match_parent"
+        a:layout_height="1px"
+        a:layout_marginStart="72dp"
+        a:layout_alignParentBottom="true"
+        a:background="@color/material_grey"/-->
+
+</RelativeLayout>
