@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.yjprojects.jsctest2.MainActivity;
+import com.yjprojects.jsctest2.activity.MainActivity;
 import com.yjprojects.jsctest2.R;
 
 import java.io.File;

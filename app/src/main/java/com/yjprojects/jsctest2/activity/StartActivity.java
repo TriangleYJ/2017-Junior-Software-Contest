@@ -1,4 +1,4 @@
-package com.yjprojects.jsctest2;
+package com.yjprojects.jsctest2.activity;
 
 import android.support.v7.app.AppCompatActivity;
 

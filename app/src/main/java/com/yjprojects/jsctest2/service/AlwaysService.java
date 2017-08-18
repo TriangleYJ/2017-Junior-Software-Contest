@@ -1,9 +1,10 @@
-package com.yjprojects.jsctest2;
+package com.yjprojects.jsctest2.service;
 
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
@@ -13,11 +14,34 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 
+import com.yjprojects.jsctest2.R;
+
 /**
  * Created by jyj on 2017-08-05.
  */
 
 public class AlwaysService extends Service {
+
+    public class AlwaysServiceBinder extends Binder {
+        public AlwaysService getService() {
+            return AlwaysService.this; //현재 서비스를 반환.
+        }
+    }
+    private final IBinder mBinder = new AlwaysServiceBinder();
+    public interface ICallback {
+        public void recvData(); //액티비티에서 선언한 콜백 함수.
+    }
+    private ICallback mCallback;
+
+    //액티비티에서 콜백 함수를 등록하기 위함.
+    public void registerCallback(ICallback cb) {
+        mCallback = cb;
+    }
+
+
+
+
+
     private static final String				TAG = "Service";
 
     private LayoutInflater					inflater;
@@ -30,9 +54,10 @@ public class AlwaysService extends Service {
 
 
 
+
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mBinder;
     }
 
     @Override
@@ -73,6 +98,8 @@ public class AlwaysService extends Service {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "Clicked");
+                mCallback.recvData();
 
             }
         });
@@ -99,7 +126,7 @@ public class AlwaysService extends Service {
                         break;
                 }
 
-                return true;
+                return false;
             }
         });
     }
@@ -109,4 +136,5 @@ public class AlwaysService extends Service {
         winMgr.removeView(view);
         super.onDestroy();
     }
+
 }

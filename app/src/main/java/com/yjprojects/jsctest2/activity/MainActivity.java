@@ -1,6 +1,5 @@
-package com.yjprojects.jsctest2;
+package com.yjprojects.jsctest2.activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -15,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.yjprojects.jsctest2.R;
 import com.yjprojects.jsctest2.recycler.BaseListClass;
 import com.yjprojects.jsctest2.recycler.MainRecyclerViewAdapter;
 
@@ -34,8 +34,14 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayoutManager glm;
 
     private List<BaseListClass> list = new ArrayList<>();
-    private Intent serviceIntent;
+
+
+
+
     private boolean close = false;
+    //////////
+
+    //////////
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class MediaAsyncTask extends AsyncTask<String, Void, Integer> {
-        private ProgressDialog mDlg;
 
         @Override
         protected void onPreExecute() {
@@ -174,16 +179,14 @@ public class MainActivity extends AppCompatActivity {
     public void onPause(){
         super.onPause();
         if(!close) {
-            serviceIntent = new Intent(getBaseContext(), AlwaysService.class);
-            startService(serviceIntent);
+            Intent pIntent = new Intent(MainActivity.this, ProjectionActivity.class);
+            startActivity(pIntent);
         }
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        serviceIntent = new Intent( getBaseContext(), AlwaysService.class );
-        stopService( serviceIntent );
     }
 
 
