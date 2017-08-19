@@ -49,7 +49,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ServiceConnection, AlwaysService.ICallback{
 
     private Toolbar toolbar;
     private RecyclerView recycler;
@@ -82,26 +82,6 @@ public class MainActivity extends AppCompatActivity {
     private AlwaysService mService;
     /////////////////
 
-
-    //서비스 - 액티비티 동기화 작업
-    private ServiceConnection mConnection = new ServiceConnection() {
-        // Called when the connection with the service is established
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            AlwaysService.AlwaysServiceBinder binder = (AlwaysService.AlwaysServiceBinder) service;
-            mService = binder.getService(); //서비스 받아옴
-            mService.registerCallback(mCallback); //콜백 등록
-        }
-
-        // Called when the connection with the service disconnects unexpectedly
-        public void onServiceDisconnected(ComponentName className) {
-            mService = null;
-        }
-    };
-    private AlwaysService.ICallback mCallback = new AlwaysService.ICallback() {
-        public void recvData() {
-            capture(mImageReader.acquireLatestImage());
-        }
-    };
     //////////////
 
     private int close = 0;
@@ -132,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
             close = 1; // 첫 pause 호출 무시
         } else if(close == 1){
             serviceIntent = new Intent(getBaseContext(), AlwaysService.class); // 일반적으로 닫힌 경우 : 서비스 시작
-            bindService(serviceIntent, mConnection, Context.BIND_AUTO_CREATE);
+            bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
         } else {
             stopProjection(); // x버튼 : 프로젝션 종료
         }
@@ -145,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "resume");
         super.onResume();
         if(serviceIntent != null){ //앱 화면으로 돌아온 경우 : 서비스 종료
-            unbindService(mConnection);
+            unbindService(this);
             serviceIntent = null;
         }
     }
@@ -156,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "destroy");
         stopProjection();
         if(serviceIntent != null){ // 앱이 완전종료 될 경우 ; 서비스 종료, 프로젝션 종료
-            unbindService(mConnection);
+            unbindService(this);
             serviceIntent = null;
         }
     }
@@ -380,6 +360,28 @@ public class MainActivity extends AppCompatActivity {
         // start capture reader
         mImageReader = ImageReader.newInstance(mWidth, mHeight, PixelFormat.RGBA_8888, 2);
         mVirtualDisplay = sMediaProjection.createVirtualDisplay(SCREENCAP_NAME, mWidth, mHeight, mDensity, VIRTUAL_DISPLAY_FLAGS, mImageReader.getSurface(), null, mHandler);
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        AlwaysService.AlwaysServiceBinder binder = (AlwaysService.AlwaysServiceBinder) service;
+        mService = binder.getService(); //서비스 받아옴
+        mService.registerCallback(this); //콜백 등록
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        mService = null;
+    }
+
+    @Override
+    public void recvData() {
+        capture(mImageReader.acquireLatestImage());
+    }
+
+    @Override
+    public void unBind() {
+        finish();
     }
 
 
