@@ -3,14 +3,17 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_margin="8dp">
 
    <ImageButton
        android:id="@+id/sc_fab"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:backgroundTint="#88FF4081"
+       android:layout_width="50dp"
+       android:layout_height="50dp"
+       android:layout_margin="3dp"
+       android:background="@drawable/add_button_selector"
+       android:gravity="center"
        android:src="@drawable/ic_remove_red_eye_white_24dp" />
 
 </LinearLayout>

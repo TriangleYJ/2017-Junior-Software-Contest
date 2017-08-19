@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -13,6 +14,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.yjprojects.jsctest2.R;
 
@@ -33,14 +37,15 @@ public class AlwaysService extends Service {
     }
     private ICallback mCallback;
 
+    @Override
+    public IBinder onBind(Intent intent) {
+        return mBinder;
+    }
+
     //액티비티에서 콜백 함수를 등록하기 위함.
     public void registerCallback(ICallback cb) {
         mCallback = cb;
     }
-
-
-
-
 
     private static final String				TAG = "Service";
 
@@ -52,13 +57,17 @@ public class AlwaysService extends Service {
     private float mTouchX, mTouchY;
     private int mViewX, mViewY;
 
+////////
+    private WindowManager windowManager;
+    private RelativeLayout chatheadView, removeView;
+    private ImageView chatheadImg, removeImg;
+    private int x_init_cord, y_init_cord, x_init_margin, y_init_margin;
+    private Point szWindow = new Point();
+    private boolean isLeft = true;
+    private String sMsg = "";
 
 
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mBinder;
-    }
 
     @Override
     public void onCreate() {
@@ -93,14 +102,14 @@ public class AlwaysService extends Service {
             Log.d(TAG, "Exception message : " + e.getLocalizedMessage());
         }
 
-        ImageButton button = (ImageButton) view.findViewById(R.id.sc_fab);
+        final ImageButton button = (ImageButton) view.findViewById(R.id.sc_fab);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Clicked");
                 mCallback.recvData();
-
+                Toast.makeText(AlwaysService.this, "Captured Image.", Toast.LENGTH_LONG).show();
             }
         });
 
