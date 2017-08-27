@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mn_drawer"
     android:layout_width="match_parent"
@@ -8,9 +7,9 @@
     android:fitsSystemWindows="true">
 
     <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/mn_coord"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/mn_coord"
         android:background="#e5e5e5">
 
 
@@ -20,21 +19,20 @@
             android:layout_height="wrap_content"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
+
             <android.support.v7.widget.Toolbar
+                android:id="@+id/mn_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/mn_toolbar"
-                android:minHeight="?attr/actionBarSize" />
+                android:minHeight="?attr/actionBarSize"/>
         </android.support.design.widget.AppBarLayout>
 
 
-
-
         <RelativeLayout
+            android:id="@+id/mn_base"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:id="@+id/mn_base">
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <!--android.widget.ScrollView
                 android:id="@+id/mn_nestedScrollView"
@@ -43,13 +41,13 @@
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
 
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/mn_recyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="vertical">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/mn_recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical">
 
-                </android.support.v7.widget.RecyclerView>
+            </android.support.v7.widget.RecyclerView>
 
 
         </RelativeLayout>
@@ -58,9 +56,9 @@
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_close_white_36dp"
             android:layout_gravity="bottom|end"
-            android:layout_margin="16dp"/>
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_close_white_36dp" />
 
     </android.support.design.widget.CoordinatorLayout>
 
@@ -69,5 +67,5 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start" />
-    
+
 </android.support.v4.widget.DrawerLayout>

@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     protected void onPause(){
         Log.d(TAG,"pause");
         if(close == 0){
-            close = 1; // 첫 pause 호출 무시
+            close = 1; // 첫 pause 호출 무시 && 다른 액티비티로 이동
         } else if(close == 1){
             serviceIntent = new Intent(getBaseContext(), AlwaysService.class); // 일반적으로 닫힌 경우 : 서비스 시작
             bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         intent.putExtra("name", data.getTitle());
         intent.putExtra("location", data.getId());
 
-
+        close = 0;
         startActivity(intent);
     }
 
