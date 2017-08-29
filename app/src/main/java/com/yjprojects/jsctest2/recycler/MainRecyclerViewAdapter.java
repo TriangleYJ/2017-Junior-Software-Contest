@@ -15,8 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.yjprojects.jsctest2.activity.MainActivity;
 import com.yjprojects.jsctest2.R;
+import com.yjprojects.jsctest2.activity.MainActivity;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -83,6 +83,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
     public int getItemCount() {
         return list.size();
     }
+
 }
 
 

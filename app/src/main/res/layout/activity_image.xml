@@ -21,24 +21,31 @@
     </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/im_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:src="@drawable/ic_close_white_36dp" />
 
+    <View
+        android:id="@+id/im_view"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="top"
+        android:background="@drawable/toolbar_grad"/>
+
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/im_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#66000000"
-        android:padding="12dp"
+        android:fitsSystemWindows="true"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
 
-    </android.support.v7.widget.Toolbar>
 
+    </android.support.v7.widget.Toolbar>
 
 </android.support.design.widget.CoordinatorLayout>
