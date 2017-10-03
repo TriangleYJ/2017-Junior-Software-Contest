@@ -2,6 +2,7 @@ package com.yjprojects.jsctest2.recycler;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,12 +15,14 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import com.squareup.picasso.Picasso;
 import com.yjprojects.jsctest2.R;
 import com.yjprojects.jsctest2.activity.MainActivity;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -27,7 +30,7 @@ import java.util.List;
  * Created by jyj on 2017-08-05.
  */
 
-public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerViewHolder> implements ViewHolderClickListener{
+public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerViewHolder> implements ViewHolderClickListener, FastScrollRecyclerView.SectionedAdapter{
     private Context context;
     public List<BaseListClass> list;
 
@@ -47,7 +50,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
 
     @Override
     public void onViewClicked(View view, int position) {
-        ((MainActivity) context).onViewClicked(list.get(position).getId(), list.get(position));
+        ((MainActivity) context).onViewClicked(list.get(position));
     }
 
     @Override
@@ -69,7 +72,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         holder.subtitle.setText(format1.format(date));
         if(data.getId() != null) {
             Picasso.with(context).load(Uri.fromFile(new File(data.getId())))
-                    .error(R.drawable.ic_crop_original_black_48dp)
+                    .error(R.drawable.failed)
                     .placeholder(R.drawable.ic_crop_original_black_48dp)
                     .centerCrop()
                     .resize(160, 160)
@@ -84,6 +87,17 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         return list.size();
     }
 
+    @NonNull
+    @Override
+    public String getSectionName(int position) {
+        Date date = list.get(position).getDate();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+
+        int date_int = cal.get(Calendar.DATE);
+        int month_int = cal.get(Calendar.MONTH) + 1;
+        return String.valueOf(month_int+"월");
+    }
 }
 
 

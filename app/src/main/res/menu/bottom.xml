@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/baction_one"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:icon="@drawable/ic_remove_red_eye_white_24dp"
+        android:title="켜짐" />
+    <item
+        android:id="@+id/baction_two"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:icon="@drawable/ic_screen_rotation_white_24dp"
+        android:title="회전" />
+    <item
+        android:id="@+id/baction_three"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:icon="@drawable/ic_save_white_24dp"
+        android:title="이미지 저장" />
+</menu>

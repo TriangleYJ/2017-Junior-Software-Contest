@@ -1,5 +1,6 @@
 package com.yjprojects.jsctest2.activity;
 
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -23,18 +24,25 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.MenuItem;
 import android.view.OrientationEventListener;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.TextView;
 
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import com.yjprojects.jsctest2.R;
+import com.yjprojects.jsctest2.User;
 import com.yjprojects.jsctest2.recycler.BaseListClass;
 import com.yjprojects.jsctest2.recycler.MainRecyclerViewAdapter;
 import com.yjprojects.jsctest2.service.AlwaysService;
@@ -43,7 +51,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -52,10 +62,15 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements ServiceConnection, AlwaysService.ICallback{
 
     private Toolbar toolbar;
-    private RecyclerView recycler;
+    private FastScrollRecyclerView recycler;
     private MainRecyclerViewAdapter adapter;
     private FloatingActionButton fab;
     private LinearLayoutManager glm;
+    private Switch swt;
+
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
 
     private List<BaseListClass> list = new ArrayList<>();
 
@@ -91,14 +106,17 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //TODO DEBUG MODE
+        User.setName("코타나");
+        User.setMode(User.MODE_RED_GREEN);
+
         init();
         initToolbar();
         initrecyclerview();
-        new MediaAsyncTask().execute();
+        new MediaAsyncTask(false).execute();
 
     }
-
-
 
     @Override
     public void onBackPressed(){
@@ -141,7 +159,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
     }
 
-
     //미디어 프로젝션
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -151,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             if (sMediaProjection != null) {
                 File externalFilesDir = Environment.getExternalStorageDirectory();
                 if (externalFilesDir != null) {
-                    STORE_DIRECTORY = externalFilesDir.getAbsolutePath() + "/screenshots/";
+                    STORE_DIRECTORY = externalFilesDir.getAbsolutePath() + "/ColorSighted/";
                     File storeDirectory = new File(STORE_DIRECTORY);
                     if (!storeDirectory.exists()) {
                         boolean success = storeDirectory.mkdirs();
@@ -187,6 +204,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     public void init(){
         fab = (FloatingActionButton) findViewById(R.id.fab);
+        drawerLayout = (DrawerLayout) findViewById(R.id.mn_drawer);
+        navigationView = (NavigationView) findViewById(R.id.mn_navi);
+        swt = (Switch) findViewById(R.id.mn_switch);
+
+
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -204,6 +227,50 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             }
         }.start();
 
+        swt.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                list.clear();
+                new MediaAsyncTask(isChecked).execute();
+            }
+        });
+
+        View header = navigationView.getHeaderView(0);
+        TextView nameT = (TextView) header.findViewById(R.id.head_name);
+        TextView modeT = (TextView) header.findViewById(R.id.head_mode);
+        modeT.setText(User.getModeName());
+        nameT.setText(User.getName());
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                if(getSupportActionBar() != null) {
+                    switch (menuItem.getItemId()) {
+                        case R.id.navigation_item_1:
+                            menuItem.setChecked(true);
+                            break;
+                        case R.id.navigation_item_2:
+                            menuItem.setChecked(true);
+                            break;
+                        case R.id.navigation_item_3:
+                            menuItem.setChecked(true);
+                            break;
+                        case R.id.navigation_subitem_1:
+                            String url = "https://namu.wiki/w/%EC%83%89%EA%B0%81%20%EC%9D%B4%EC%83%81";
+                            String url1 = "https://ko.wikipedia.org/wiki/%EC%83%89%EA%B0%81_%EC%9D%B4%EC%83%81";
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse((Math.random() < 0.5) ? url : url1));
+                            startActivity(browserIntent);
+                            break;
+                        case R.id.navigation_subitem_2:
+                            break;
+
+                    }
+                    drawerLayout.closeDrawers();
+                }
+
+                return false;
+            }
+        });
+
         initCapture();
     }
 
@@ -216,10 +283,15 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         toolbar = (Toolbar) findViewById(R.id.mn_toolbar);
         toolbar.setTitle("Home");
         setSupportActionBar(toolbar);
+
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar, 0, 0);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
+        actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
     }
 
     private void initrecyclerview() {
-        recycler = (RecyclerView) findViewById(R.id.mn_recyclerView);
+        recycler = (FastScrollRecyclerView) findViewById(R.id.mn_recyclerView);
         glm = new LinearLayoutManager(this);
         recycler.setNestedScrollingEnabled(false);
         recycler.setHasFixedSize(true);
@@ -231,9 +303,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         recycler.setAdapter(adapter);
     }
 
-    public void onViewClicked(String id, BaseListClass data){
+    public void onViewClicked(BaseListClass data){
         //TODO : 클릭시 위치 맨 앞으로 변경
-        Toast.makeText(this, data.getTitle(), Toast.LENGTH_LONG).show();
         Intent intent = new Intent(this, ImageActivity.class);
         intent.putExtra("name", data.getTitle());
         intent.putExtra("location", data.getId());
@@ -242,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         startActivity(intent);
     }
 
-    private void loadimage(){
+    private void loadimage(boolean eyeshot){
         try {
             String[] projection = {MediaStore.Images.Media.DATA};
             Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -264,16 +335,20 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
                     /*****  Used to show image on view in LoadImagesFromSDCard class ******/
                     String path = cursor.getString(file_ColumnIndex);
+                    if(!eyeshot || new File(path).getParentFile().getName().equals("Sighted")){
 
-                    String fileName = path.substring(path.lastIndexOf("/") + 1, path.length());
+                        String fileName = path.substring(path.lastIndexOf("/") + 1, path.length());
+                        if(!eyeshot || fileName.substring(fileName.lastIndexOf(".")).equals(".jpeg")) {
 
-                    int pos = fileName.lastIndexOf(".");
-                    String ext = fileName.substring(pos+1);
 
-                    Long ldate = new File(path).lastModified();
-                    Date date = new Date(ldate);
-                    BaseListClass mediaFileInfo = new BaseListClass(fileName, date, path);
-                    list.add(mediaFileInfo);
+                            int pos = fileName.lastIndexOf(".");
+
+                            Long ldate = new File(path).lastModified();
+                            Date date = new Date(ldate);
+                            BaseListClass mediaFileInfo = new BaseListClass(fileName, date, path);
+                            list.add(mediaFileInfo);
+                        }
+                    }
 
                 }
             }
@@ -299,18 +374,19 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 bitmap = Bitmap.createBitmap(mWidth + rowPadding / pixelStride, mHeight, Bitmap.Config.ARGB_8888);
                 bitmap.copyPixelsFromBuffer(buffer);
 
-                String random = "";
-                for(int i = 0; i < 10; i++){
-                    random += (char)(65 + Math.floor(Math.random()*26));
-                }
-
+                Date date = Calendar.getInstance().getTime();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+                String rand = sdf.format(date);
+                String name = "Eyeshot_" + rand + ".png";
                 // write bitmap to a file
-                fos = new FileOutputStream(STORE_DIRECTORY + "myscreen_" + random + ".png");
+                fos = new FileOutputStream(STORE_DIRECTORY + name);
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
 
-                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://"+STORE_DIRECTORY + "myscreen_" + random + ".png")));
+                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://"+STORE_DIRECTORY + name)));
 
                 IMAGES_PRODUCED++;
+                BaseListClass newImage = new BaseListClass(name, null, STORE_DIRECTORY + name);
+                onViewClicked(newImage);
                 Log.e(TAG, "captured image: " + IMAGES_PRODUCED);
             }
 
@@ -384,7 +460,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         finish();
     }
 
-
     //클래스
     private class OrientationChangeCallback extends OrientationEventListener {
 
@@ -428,29 +503,43 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     }
 
     private class MediaAsyncTask extends AsyncTask<String, Void, Integer> {
+        boolean eyeshot;
+        ProgressDialog dialog;
+
+        public MediaAsyncTask(boolean eyeshot) {
+            super();
+            this.eyeshot = eyeshot;
+        }
 
         @Override
         protected void onPreExecute() {
+            dialog = new ProgressDialog(MainActivity.this);
+            dialog.setTitle("");
+            dialog.setMessage("로딩중..");
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            dialog.setCanceledOnTouchOutside(false);
 
+            dialog.show();
         }
 
         @Override
         protected Integer doInBackground(String... params) {
             int result = 1;
             try {
-                loadimage();
+                loadimage(eyeshot);
                 Collections.sort(list, new Comparator<BaseListClass>() {
                     @Override
                     public int compare(BaseListClass o1, BaseListClass o2) {
                         return o2.getDate().compareTo(o1.getDate());
                     }
                 });
+
             }catch (Exception e) {
                 e.printStackTrace();
-                result =0;
+                result = 0;
             }
 
-            return result; //"Failed to fetch data!";
+            return result;
         }
 
         @Override
@@ -459,12 +548,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             //첫 리스트 업데이트
             if (result == 1) {
                 recyclerPatch(list);
+                dialog.dismiss();
             } else {
                 Log.e("TAG", "Failed to fetch data!");
             }
         }
     }
-
 
 
 }

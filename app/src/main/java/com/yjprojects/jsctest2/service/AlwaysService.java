@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -33,6 +34,7 @@ public class AlwaysService extends Service{
         public void recvData(); //액티비티에서 선언한 콜백 함수.
         public void unBind();
     }
+
     private ICallback mCallback;
     public void registerCallback(ICallback cb) {
         mCallback = cb;
@@ -59,7 +61,7 @@ public class AlwaysService extends Service{
     private int x_init_cord, y_init_cord, x_init_margin, y_init_margin;
     private Point szWindow = new Point();
     private boolean isLeft = true;
-    ImageButton rButton;
+    ImageView rButton;
 
     @Override
     public void onCreate() {
@@ -89,7 +91,7 @@ public class AlwaysService extends Service{
         params.gravity = Gravity.TOP | Gravity.START;
         removeParams.gravity = Gravity.TOP | Gravity.START;
         removeView.setVisibility(View.GONE);
-        
+
         try {
             winMgr = (WindowManager) getSystemService( WINDOW_SERVICE );
             winMgr.addView( view, params );
@@ -102,7 +104,7 @@ public class AlwaysService extends Service{
         }
 
         ImageButton button = (ImageButton) view.findViewById(R.id.sc_fab);
-        rButton = (ImageButton) removeView.findViewById(R.id.remover);
+        rButton = (ImageView) removeView.findViewById(R.id.remove);
 
         button.setOnTouchListener(new View.OnTouchListener() {
             long time_start = 0, time_end = 0;
@@ -122,12 +124,13 @@ public class AlwaysService extends Service{
                     chathead_longclick();
                 }
             };
-            
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int x_cord = (int) event.getRawX();
                 int y_cord = (int) event.getRawY();
                 int x_cord_Destination, y_cord_Destination;
+                if(winMgr == null) return false;
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
@@ -157,8 +160,7 @@ public class AlwaysService extends Service{
 
                         int x_diff = x_cord - x_init_cord;
                         int y_diff = y_cord - y_init_cord;
-
-                        if(Math.abs(x_diff) < 5 && Math.abs(y_diff) < 5){
+                        if(Math.abs(x_diff) < 15 && Math.abs(y_diff) < 15){
                             time_end = System.currentTimeMillis();
                             if((time_end - time_start) < 300){
                                 chathead_click();
@@ -177,6 +179,7 @@ public class AlwaysService extends Service{
 
                         inBounded = false;
                         resetPosition(x_cord);
+
                         break;
                     case MotionEvent.ACTION_MOVE:
                         int x_diff_move = x_cord - x_init_cord;
@@ -244,15 +247,14 @@ public class AlwaysService extends Service{
         // TODO Auto-generated method stub
         super.onConfigurationChanged(newConfig);
 
-        if(winMgr == null)
-            return;
+        if(winMgr == null) return;
 
         winMgr.getDefaultDisplay().getSize(szWindow);
 
         WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) view.getLayoutParams();
 
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            
+
 
             if(layoutParams.y + (view.getHeight() + getStatusBarHeight()) > szWindow.y){
                 layoutParams.y = szWindow.y- (view.getHeight() + getStatusBarHeight());
@@ -271,54 +273,79 @@ public class AlwaysService extends Service{
 
     }
 
-
+    /*  Reset position of Floating Widget view on dragging  */
     private void resetPosition(int x_cord_now) {
-        if(x_cord_now <= szWindow.x / 2){
+        if(winMgr == null) return;
+        if (x_cord_now <= szWindow.x / 2) {
             isLeft = true;
             moveToLeft(x_cord_now);
-
         } else {
             isLeft = false;
             moveToRight(x_cord_now);
-
         }
 
     }
-    private void moveToLeft(final int x_cord_now){
-        final int x = szWindow.x - x_cord_now;
+
+
+    /*  Method to move the Floating widget view to Left  */
+    private void moveToLeft(final int current_x_cord) {
+        if(winMgr == null) return;
+        final int x = szWindow.x - current_x_cord;
 
         new CountDownTimer(500, 5) {
+            //get params of Floating Widget view
             WindowManager.LayoutParams mParams = (WindowManager.LayoutParams) view.getLayoutParams();
+
             public void onTick(long t) {
-                long step = (500 - t)/5;
-                mParams.x = 0 - (int)(double)bounceValue(step*2, x );
+                long step = (500 - t) / 5;
+
+                mParams.x = 0 - (int) (current_x_cord * current_x_cord * step);
+
+                //If you want bounce effect uncomment below line and comment above line
+                // mParams.x = 0 - (int) (double) bounceValue(step, x);
+
+
+                //Update window manager for Floating Widget
                 winMgr.updateViewLayout(view, mParams);
             }
+
             public void onFinish() {
                 mParams.x = 0;
-                winMgr.updateViewLayout(view, mParams);
-            }
-        }.start();
-    }
-    private  void moveToRight(final int x_cord_now){
-        new CountDownTimer(500, 5) {
-            WindowManager.LayoutParams mParams = (WindowManager.LayoutParams) view.getLayoutParams();
-            public void onTick(long t) {
-                long step = (500 - t)/5;
-                mParams.x = szWindow.x + (int)(double)bounceValue(step*2, x_cord_now) - view.getWidth();
-                winMgr.updateViewLayout(view, mParams);
-            }
-            public void onFinish() {
-                mParams.x = szWindow.x - view.getWidth();
+
+                //Update window manager for Floating Widget
                 winMgr.updateViewLayout(view, mParams);
             }
         }.start();
     }
 
-    private double bounceValue(long step, long scale){
-        double value = scale * java.lang.Math.exp(-0.055 * step) * java.lang.Math.cos(0.08 * step);
-        return value;
+    /*  Method to move the Floating widget view to Right  */
+    private void moveToRight(final int current_x_cord) {
+        if(winMgr == null) return;
+        new CountDownTimer(500, 5) {
+            //get params of Floating Widget view
+            WindowManager.LayoutParams mParams = (WindowManager.LayoutParams) view.getLayoutParams();
+
+            public void onTick(long t) {
+                long step = (500 - t) / 5;
+
+                mParams.x = (int) (szWindow.x + (current_x_cord * current_x_cord * step) - view.getWidth());
+
+                //If you want bounce effect uncomment below line and comment above line
+                //  mParams.x = szWindow.x + (int) (double) bounceValue(step, x_cord_now) - view.getWidth();
+
+                //Update window manager for Floating Widget
+                winMgr.updateViewLayout(view, mParams);
+            }
+
+            public void onFinish() {
+                mParams.x = szWindow.x - view.getWidth();
+
+                //Update window manager for Floating Widget
+                winMgr.updateViewLayout(view, mParams);
+            }
+        }.start();
     }
+
 
     private int getStatusBarHeight() {
         int statusBarHeight = (int) Math.ceil(25 * getApplicationContext().getResources().getDisplayMetrics().density);
@@ -329,6 +356,8 @@ public class AlwaysService extends Service{
         Log.d(TAG, "Clicked");
         mCallback.recvData();
         Toast.makeText(AlwaysService.this, "Captured Image.", Toast.LENGTH_LONG).show();
+        mCallback.unBind();
+        onDestroy();
     }
 
     private void chathead_longclick(){
@@ -346,8 +375,10 @@ public class AlwaysService extends Service{
 
     @Override
     public void onDestroy() {
-        winMgr.removeView(view);
+        if(winMgr != null) winMgr.removeView(view);
+
         mBinder = null;
+        winMgr = null;
         super.onDestroy();
     }
 

@@ -5,11 +5,12 @@
     android:orientation="vertical"
     android:layout_margin="8dp">
 
-    <ImageButton
-        android:id="@+id/remover"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:background="@drawable/add_button_selector_2"
-        android:src="@drawable/ic_close_white_36dp" />
+    <ImageView
+        android:id="@+id/remove"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@drawable/white_circle_shape"
+        android:padding="10dp"
+        android:src="@drawable/ic_close_white_24" />
 
 </LinearLayout>

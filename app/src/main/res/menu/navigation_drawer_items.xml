@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/navigation_item_1"
+            android:checked="true"
+            android:icon="@drawable/ic_home_white_24dp"
+            android:title="홈" />
+        <item
+            android:id="@+id/navigation_item_2"
+            android:checked="false"
+            android:icon="@drawable/ic_remove_red_eye_white_24dp"
+            android:title="색맹 검사" />
+        <item
+            android:id="@+id/navigation_item_3"
+            android:checked="false"
+            android:icon="@drawable/ic_settings_white_24dp"
+            android:title="설정" />
+
+        <item
+            android:title="도움이 될 수 있는 정보들..">
+            <menu>
+                <item
+                    android:id="@+id/navigation_subitem_1"
+                    android:checked="false"
+                    android:title="색각 이상이란?" />
+
+                <item
+                    android:id="@+id/navigation_subitem_2"
+                    android:checked="false"
+                    android:title="개발자 정보" />
+            </menu>
+        </item>
+    </group>
+
+</menu>

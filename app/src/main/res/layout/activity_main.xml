@@ -24,7 +24,17 @@
                 android:id="@+id/mn_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="?attr/actionBarSize"/>
+                android:minHeight="?attr/actionBarSize">
+
+                <Switch  android:id="@+id/mn_switch"
+                    android:layout_gravity="right"
+                    android:paddingEnd="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    />
+
+            </android.support.v7.widget.Toolbar>
 
         </android.support.design.widget.AppBarLayout>
 
@@ -42,13 +52,16 @@
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
 
 
-            <android.support.v7.widget.RecyclerView
+            <com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
                 android:id="@+id/mn_recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scrollbars="vertical">
+                android:scrollbars="none"
+                app:fastScrollThumbColor="@color/colorAccent"
+                app:fastScrollPopupBgColor="@color/colorAccent"
+                app:fastScrollPopupTextColor="@android:color/primary_text_dark">
 
-            </android.support.v7.widget.RecyclerView>
+            </com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView>
 
 
         </RelativeLayout>
@@ -67,6 +80,10 @@
         android:id="@+id/mn_navi"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="start" />
+        android:layout_gravity="start"
+        app:headerLayout="@layout/nav_header"
+        app:itemIconTint="@color/list_icon_color"
+        app:itemTextColor="@color/list_item_color"
+        app:menu="@menu/navigation_drawer_items" />
 
 </android.support.v4.widget.DrawerLayout>

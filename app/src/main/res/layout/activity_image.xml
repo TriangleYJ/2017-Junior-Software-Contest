@@ -2,38 +2,25 @@
 
 
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/im_coord"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
 
-    <RelativeLayout
-        android:id="@+id/im_base"
+    <com.github.chrisbanes.photoview.PhotoView
+        android:id="@+id/im"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent" />
 
-        <com.github.chrisbanes.photoview.PhotoView
-            android:id="@+id/im"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-
-    </RelativeLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/im_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_close_white_36dp" />
 
     <View
-        android:id="@+id/im_view"
+        android:id="@+id/im_view_top"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_gravity="top"
         android:background="@drawable/toolbar_grad"/>
+
 
 
     <android.support.v7.widget.Toolbar
@@ -48,4 +35,17 @@
 
     </android.support.v7.widget.Toolbar>
 
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior=""
+        app:itemBackground="@color/black66"
+        app:itemIconTint="@color/white"
+        app:itemTextColor="@color/dark_bg_light_primary_text"
+        app:menu="@menu/bottom"
+        android:layout_gravity="bottom"/>
+
 </android.support.design.widget.CoordinatorLayout>
+
+
