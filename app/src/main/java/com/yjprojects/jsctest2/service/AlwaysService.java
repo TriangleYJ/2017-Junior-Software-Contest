@@ -130,7 +130,6 @@ public class AlwaysService extends Service{
                 int x_cord = (int) event.getRawX();
                 int y_cord = (int) event.getRawY();
                 int x_cord_Destination, y_cord_Destination;
-                if(winMgr == null) return false;
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
@@ -188,7 +187,7 @@ public class AlwaysService extends Service{
                         y_cord_Destination = y_init_margin + y_diff_move;
                         if(isLongclick){
                             int x_bound_left = szWindow.x / 2 - (int)(remove_img_width * 1.5);
-                            int x_bound_right = szWindow.x / 2 +  (int)(remove_img_width * 1.5);
+                            int x_bound_right = szWindow.x / 2  + (int)(remove_img_width * 1.5);
                             int y_bound_top = szWindow.y - (int)(remove_img_height * 1.5);
 
                             if((x_cord >= x_bound_left && x_cord <= x_bound_right) && y_cord >= y_bound_top){
@@ -231,7 +230,6 @@ public class AlwaysService extends Service{
                         }
                         params.x = x_cord_Destination;
                         params.y = y_cord_Destination;
-
                         winMgr.updateViewLayout(view, params);
                         break;
 
@@ -247,8 +245,6 @@ public class AlwaysService extends Service{
         // TODO Auto-generated method stub
         super.onConfigurationChanged(newConfig);
 
-        if(winMgr == null) return;
-
         winMgr.getDefaultDisplay().getSize(szWindow);
 
         WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) view.getLayoutParams();
@@ -258,7 +254,7 @@ public class AlwaysService extends Service{
 
             if(layoutParams.y + (view.getHeight() + getStatusBarHeight()) > szWindow.y){
                 layoutParams.y = szWindow.y- (view.getHeight() + getStatusBarHeight());
-                winMgr.updateViewLayout(view, layoutParams);
+                if(winMgr != null)winMgr.updateViewLayout(view, layoutParams);
             }
 
             if(layoutParams.x != 0 && layoutParams.x < szWindow.x){
@@ -275,7 +271,6 @@ public class AlwaysService extends Service{
 
     /*  Reset position of Floating Widget view on dragging  */
     private void resetPosition(int x_cord_now) {
-        if(winMgr == null) return;
         if (x_cord_now <= szWindow.x / 2) {
             isLeft = true;
             moveToLeft(x_cord_now);
@@ -289,7 +284,6 @@ public class AlwaysService extends Service{
 
     /*  Method to move the Floating widget view to Left  */
     private void moveToLeft(final int current_x_cord) {
-        if(winMgr == null) return;
         final int x = szWindow.x - current_x_cord;
 
         new CountDownTimer(500, 5) {
@@ -306,21 +300,20 @@ public class AlwaysService extends Service{
 
 
                 //Update window manager for Floating Widget
-                winMgr.updateViewLayout(view, mParams);
+                if(winMgr != null)winMgr.updateViewLayout(view, mParams);
             }
 
             public void onFinish() {
                 mParams.x = 0;
 
                 //Update window manager for Floating Widget
-                winMgr.updateViewLayout(view, mParams);
+                if(winMgr != null)winMgr.updateViewLayout(view, mParams);
             }
         }.start();
     }
 
     /*  Method to move the Floating widget view to Right  */
     private void moveToRight(final int current_x_cord) {
-        if(winMgr == null) return;
         new CountDownTimer(500, 5) {
             //get params of Floating Widget view
             WindowManager.LayoutParams mParams = (WindowManager.LayoutParams) view.getLayoutParams();
@@ -334,14 +327,14 @@ public class AlwaysService extends Service{
                 //  mParams.x = szWindow.x + (int) (double) bounceValue(step, x_cord_now) - view.getWidth();
 
                 //Update window manager for Floating Widget
-                winMgr.updateViewLayout(view, mParams);
+                if(winMgr != null)winMgr.updateViewLayout(view, mParams);
             }
 
             public void onFinish() {
                 mParams.x = szWindow.x - view.getWidth();
 
                 //Update window manager for Floating Widget
-                winMgr.updateViewLayout(view, mParams);
+                if(winMgr != null)winMgr.updateViewLayout(view, mParams);
             }
         }.start();
     }
@@ -356,7 +349,7 @@ public class AlwaysService extends Service{
         Log.d(TAG, "Clicked");
         mCallback.recvData();
         Toast.makeText(AlwaysService.this, "Captured Image.", Toast.LENGTH_LONG).show();
-        mCallback.unBind();
+        //mCallback.unBind();
         onDestroy();
     }
 
@@ -370,7 +363,7 @@ public class AlwaysService extends Service{
         param_remove.x = x_cord_remove;
         param_remove.y = y_cord_remove;
 
-        winMgr.updateViewLayout(removeView, param_remove);
+        if(winMgr != null)winMgr.updateViewLayout(removeView, param_remove);
     }
 
     @Override

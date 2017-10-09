@@ -5,15 +5,17 @@ package com.yjprojects.jsctest2;
  */
 
 public class User {
-    public final static boolean[] _NOT_BLINDNESS = {false, false, false, false};
-    public final static boolean[] _RED_GREEN_BLINDNESS = {true, true, false, false};
-    public final static boolean[] _BLUE_YELLOW_BLINDNESS = {false, false, true, true};
-    public final static boolean[] _ALL_BLINDNESS = {true, true, true, true};
+    private final static boolean[] _NOT_BLINDNESS = {false, false, false, false};
+    private final static boolean[] _RED_BLINDNESS = {true, true, false, false};
+    private final static boolean[] _GREEN_BLINDESS = {false, true, true, false};
+    private final static boolean[] _BLUE_BLINDNESS = {false, false, true, true};
+    private final static boolean[] _ALL_BLINDNESS = {true, true, true, true};
 
     public final static int MODE_NORMAL = 0;
-    public final static int MODE_RED_GREEN = 1;
-    public final static int MODE_BLUE_YELLOW = 2;
-    public final static int MODE_ALL = 3;
+    public final static int MODE_RED = 1;
+    public final static int MODE_GREEN = 2;
+    public final static int MODE_BLUE = 3;
+    public final static int MODE_ALL = 4;
 
 
     private static String name = "Cortana";
@@ -28,11 +30,14 @@ public class User {
             case MODE_NORMAL :
                 out = "정상";
                 break;
-            case MODE_RED_GREEN :
-                out = "적록색맹";
+            case MODE_RED :
+                out = "적색맹";
                 break;
-            case MODE_BLUE_YELLOW :
-                out = "청황색맹";
+            case MODE_GREEN :
+                out = "녹색맹";
+                break;
+            case MODE_BLUE:
+                out = "청색맹";
                 break;
             case MODE_ALL:
                 out = "전색맹";
@@ -44,11 +49,17 @@ public class User {
     public static boolean[] getModeDetail(){
         boolean[] out = _NOT_BLINDNESS;
         switch (mode){
-            case MODE_RED_GREEN :
-                out = _RED_GREEN_BLINDNESS;
+            case MODE_NORMAL :
+                out = _NOT_BLINDNESS;
                 break;
-            case MODE_BLUE_YELLOW :
-                out = _BLUE_YELLOW_BLINDNESS;
+            case MODE_RED :
+                out = _RED_BLINDNESS;
+                break;
+            case MODE_GREEN:
+                out = _GREEN_BLINDESS;
+                break;
+            case MODE_BLUE:
+                out = _BLUE_BLINDNESS;
                 break;
             case MODE_ALL:
                 out = _ALL_BLINDNESS;

@@ -32,7 +32,6 @@ import com.github.chrisbanes.photoview.PhotoView;
 import com.yjprojects.jsctest2.R;
 import com.yjprojects.jsctest2.User;
 
-import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 
@@ -68,12 +67,6 @@ public class ImageActivity extends AppCompatActivity {
     static {
         System.loadLibrary("opencv_java3");
         System.loadLibrary("native-lib");
-
-        if(!OpenCVLoader.initDebug()) {
-            Log.d("ERROR", "Unable to load OpenCV");
-        } else {
-            Log.d("SUCCESS", "OpenCV loaded");
-        }
     }
 
 
@@ -84,9 +77,6 @@ public class ImageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_image);
 
         onPause = false;
-        if(savedInstanceState != null){
-            rotation = (boolean) savedInstanceState.getSerializable("rotation");
-        }
 
         getData();
         check();
@@ -197,7 +187,7 @@ public class ImageActivity extends AppCompatActivity {
     }
 
     private void initToolbar(){
-       getWindow().getDecorView().setSystemUiVisibility(
+        getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         toolbar.setTitle(name);
@@ -240,13 +230,6 @@ public class ImageActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
-    public void onSaveInstanceState(Bundle b){
-        super.onSaveInstanceState(b);
-        b.putSerializable("rotation", rotation);
     }
 
 
@@ -294,7 +277,6 @@ public class ImageActivity extends AppCompatActivity {
         Mat c = drawable2M(R.drawable.dot);
         Mat d = drawable2M(R.drawable.xx);
 
-        User.setMode(User.MODE_ALL);
         Convert(img.getNativeObjAddr(), rig.getNativeObjAddr(), a.getNativeObjAddr(), b.getNativeObjAddr(), c.getNativeObjAddr(), d.getNativeObjAddr(), User.getModeDetail(), User.getQuality());
 
         Bitmap bp = Bitmap.createBitmap(rig.cols(), rig.rows(), Bitmap.Config.ARGB_8888);
@@ -412,6 +394,8 @@ public class ImageActivity extends AppCompatActivity {
         if(bmp.getWidth() > bmp.getHeight()) setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         rotation = !rotation;
     }
+
+
 
 
 }

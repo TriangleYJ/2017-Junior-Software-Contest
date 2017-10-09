@@ -50,7 +50,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
 
     @Override
     public void onViewClicked(View view, int position) {
-        ((MainActivity) context).onViewClicked(list.get(position));
+        ((MainActivity) context).onViewClicked(list.get(position), 0);
     }
 
     @Override

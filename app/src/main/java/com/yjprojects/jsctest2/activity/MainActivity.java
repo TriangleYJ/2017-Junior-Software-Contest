@@ -1,10 +1,12 @@
 package com.yjprojects.jsctest2.activity;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
@@ -22,6 +24,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -39,7 +42,10 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import com.yjprojects.jsctest2.R;
 import com.yjprojects.jsctest2.User;
@@ -107,10 +113,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //TODO DEBUG MODE
-        User.setName("코타나");
-        User.setMode(User.MODE_RED_GREEN);
 
+        check();
+        permission();
+        initUser();
         init();
         initToolbar();
         initrecyclerview();
@@ -145,6 +151,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         if(serviceIntent != null){ //앱 화면으로 돌아온 경우 : 서비스 종료
             unbindService(this);
             serviceIntent = null;
+        }
+        if(swt != null){
+            list.clear();
+            new MediaAsyncTask(swt.isChecked()).execute();
         }
     }
 
@@ -236,23 +246,26 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         });
 
         View header = navigationView.getHeaderView(0);
-        TextView nameT = (TextView) header.findViewById(R.id.head_name);
-        TextView modeT = (TextView) header.findViewById(R.id.head_mode);
+        final TextView nameT = (TextView) header.findViewById(R.id.head_name);
+        final TextView modeT = (TextView) header.findViewById(R.id.head_mode);
         modeT.setText(User.getModeName());
         nameT.setText(User.getName());
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 if(getSupportActionBar() != null) {
+                    close = 0;
                     switch (menuItem.getItemId()) {
                         case R.id.navigation_item_1:
-                            menuItem.setChecked(true);
+                            //This Part Will be better to do with fragments, but there is really complicated problems about communicating between activity and fragments.
                             break;
                         case R.id.navigation_item_2:
-                            menuItem.setChecked(true);
+                            Intent userInit = new Intent(MainActivity.this, UserInitActivity.class);
+                            startActivity(userInit);
                             break;
                         case R.id.navigation_item_3:
-                            menuItem.setChecked(true);
+                            Intent setting = new Intent(MainActivity.this, SettingActivity.class);
+                            startActivity(setting);
                             break;
                         case R.id.navigation_subitem_1:
                             String url = "https://namu.wiki/w/%EC%83%89%EA%B0%81%20%EC%9D%B4%EC%83%81";
@@ -261,6 +274,13 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                             startActivity(browserIntent);
                             break;
                         case R.id.navigation_subitem_2:
+                            Intent intro = new Intent(MainActivity.this, IntroActivity.class);
+                            startActivity(intro);
+                            finish();
+                            break;
+                        case R.id.navigation_subitem_3:
+                            Intent develop = new Intent(MainActivity.this, DeveloperActivity.class);
+                            startActivity(develop);
                             break;
 
                     }
@@ -270,6 +290,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 return false;
             }
         });
+
 
         initCapture();
     }
@@ -303,13 +324,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         recycler.setAdapter(adapter);
     }
 
-    public void onViewClicked(BaseListClass data){
-        //TODO : 클릭시 위치 맨 앞으로 변경
+    public void onViewClicked(BaseListClass data, int mode){
+        close = mode;
         Intent intent = new Intent(this, ImageActivity.class);
         intent.putExtra("name", data.getTitle());
         intent.putExtra("location", data.getId());
-
-        close = 0;
         startActivity(intent);
     }
 
@@ -386,7 +405,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
                 IMAGES_PRODUCED++;
                 BaseListClass newImage = new BaseListClass(name, null, STORE_DIRECTORY + name);
-                onViewClicked(newImage);
+                onViewClicked(newImage, 1);
                 Log.e(TAG, "captured image: " + IMAGES_PRODUCED);
             }
 
@@ -502,6 +521,22 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
     }
 
+    private void initUser(){
+
+        int result = PreferenceManager.getDefaultSharedPreferences(this).getInt("density", 50);
+        int density = 2000 - result * 10;
+        User.setDensity(density);
+        int result1 = PreferenceManager.getDefaultSharedPreferences(this).getInt("quality", 750);
+        if(result1 == 0) result1 = 1;
+        User.setQuality(result1);
+        String result2 = PreferenceManager.getDefaultSharedPreferences(this).getString("username", "코타나");
+        User.setName(result2);
+        int result3 = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("mode", "0"));
+        User.setMode(result3);
+
+
+    }
+
     private class MediaAsyncTask extends AsyncTask<String, Void, Integer> {
         boolean eyeshot;
         ProgressDialog dialog;
@@ -553,6 +588,47 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 Log.e("TAG", "Failed to fetch data!");
             }
         }
+    }
+
+    private void check(){
+        SharedPreferences pref = getSharedPreferences("eye", MODE_PRIVATE);
+        if(pref.getInt("one", 0) == 0){
+            Intent intro = new Intent(MainActivity.this, IntroActivity.class);
+            startActivity(intro);
+            finish();
+        }
+        else if(pref.getInt("two", 0) == 0){
+            Intent userInit = new Intent(MainActivity.this, UserInitActivity.class);
+            startActivity(userInit);
+        }
+
+    }
+
+
+    private void permission(){
+        PermissionListener permissionlistener = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+
+            }
+
+            @Override
+            public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                Toast.makeText(MainActivity.this, "Permission Denied\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
+            }
+
+        };
+
+
+        TedPermission.with(this)
+                .setRationaleTitle("6.0이상 버전부터는 권한 동의가 필요함")
+                .setRationaleMessage(" 이 앱에서는 다른 앱 위에 그리기, 저장공간 권한을 정상적인 앱 구동을 위하여 필요로 합니다. 확인 메시지가 나올 시 동의로 체크해 주시기 바랍니다.\n 또한 스크린샷 캡쳐 기능을 사용하고자 하니 초기 실행시 '화면상의 모든 것을 캡쳐하시겠습니까' 메시지에 대하여 다시 묻지 않기로 '시작하기' 버튼을 눌러 주시기 바랍니다.")
+                .setPermissionListener(permissionlistener)
+                .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
+                .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.VIBRATE)
+                .check();
+
+
     }
 
 

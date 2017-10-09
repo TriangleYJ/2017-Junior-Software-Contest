@@ -35,6 +35,7 @@ extern "C" {
         Mat &xs = *(Mat *)d;
 
 
+        //Thanks to 원호
         int h = image.size().height;
         int w = image.size().width;
         double scale = quality / (double)min(h, w);
