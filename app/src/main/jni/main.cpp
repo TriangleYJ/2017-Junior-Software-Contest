@@ -35,7 +35,6 @@ extern "C" {
         Mat &xs = *(Mat *)d;
 
 
-        //Thanks to 원호
         int h = image.size().height;
         int w = image.size().width;
         double scale = quality / (double)min(h, w);
@@ -45,15 +44,16 @@ extern "C" {
         int i, j;
 
         cvtColor(image, image, CV_RGB2HSV);
+        int ab = 0;
         if (ifred) {
             for (i = 0; i < h; i++) {
                 for (j = 0; j < w; j++) {
                     if (strip.at<Vec3b>(i, j)[0] > 120) continue;
                     int ta = image.at<Vec3b>(i, j)[0], tb = image.at<Vec3b>(i, j)[1], tc = image.at<Vec3b>(i, j)[2];
-                    if ((ta > 10 && ta < 160) || tb < 70 || tc < 80) continue;
+                    if ((ta > 10 + ab && ta < 160 - ab) || tb < 70 || tc < 80) continue;
                     image.at<Vec3b>(i, j)[1] = tb / 2;
                     ta = ta > 90 ? 180 - ta : ta;
-                    image.at<Vec3b>(i, j)[2] = 200 - ta * 2;
+                    image.at<Vec3b>(i, j)[2] = 255 - ta * 2;
                 }
             }
         }
@@ -62,9 +62,9 @@ extern "C" {
                 for (j = 0; j < w; j++) {
                     if (cstrip.at<Vec3b>(i, j)[0] > 120) continue;
                     int ta = image.at<Vec3b>(i, j)[0], tb = image.at<Vec3b>(i, j)[1], tc = image.at<Vec3b>(i, j)[2];
-                    if (ta < 33 || ta>85 || tb < 70 || tc < 80) continue;
+                    if (ta < 33 - ab || ta> 85 + ab || tb < 70 || tc < 80) continue;
                     image.at<Vec3b>(i, j)[1] = tb / 3;
-                    image.at<Vec3b>(i, j)[2] = 220 - abs(60 - ta) * 2;
+                    image.at<Vec3b>(i, j)[2] = 255 - abs(60 - ta) * 2;
                 }
             }
         }
@@ -73,9 +73,9 @@ extern "C" {
                 for (j = 0; j < w; j++) {
                     if (xs.at<Vec3b>(i, j)[0] > 120) continue;
                     int ta = image.at<Vec3b>(i, j)[0], tb = image.at<Vec3b>(i, j)[1], tc = image.at<Vec3b>(i, j)[2];
-                    if (ta < 95 || ta>135 || tb < 70 || tc < 80) continue;
+                    if (ta < 95 - ab || ta> 135 +ab || tb < 70 || tc < 80) continue;
                     image.at<Vec3b>(i, j)[1] = tb / 3;
-                    image.at<Vec3b>(i, j)[2] = 255 - abs(120 - ta) * 2;
+                    image.at<Vec3b>(i, j)[2] = 255 - abs(120 - ta);
                 }
             }
         }
@@ -84,7 +84,7 @@ extern "C" {
                 for (j = 0; j < w; j++) {
                     if (dot.at<Vec3b>(i, j)[0] > 120) continue;
                     int ta = image.at<Vec3b>(i, j)[0], tb = image.at<Vec3b>(i, j)[1], tc = image.at<Vec3b>(i, j)[2];
-                    if (ta<16 || ta>32 || tb < 70 || tc < 80) continue;
+                    if (ta<16 - ab || ta>32 + ab || tb < 70 || tc < 80) continue;
                     image.at<Vec3b>(i, j)[1] = tb / 3;
                     image.at<Vec3b>(i, j)[2] = 255 - abs(24-ta) * 2;
                 }

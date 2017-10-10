@@ -76,6 +76,8 @@ public class UserInitActivity extends AppIntro2 {
         super.onDonePressed(currentFragment);
         // Do something when users tap on Done button.
 
+
+        //색맹 판단 알고리즘
         if(((TestFragment)fr1).getCurrent() == 2) none++;
         else{red++; green++; all++;}
 

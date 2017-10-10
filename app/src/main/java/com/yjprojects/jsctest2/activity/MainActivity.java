@@ -53,9 +53,13 @@ import com.yjprojects.jsctest2.recycler.BaseListClass;
 import com.yjprojects.jsctest2.recycler.MainRecyclerViewAdapter;
 import com.yjprojects.jsctest2.service.AlwaysService;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -266,11 +270,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                         case R.id.navigation_item_3:
                             Intent setting = new Intent(MainActivity.this, SettingActivity.class);
                             startActivity(setting);
+                            finish();
                             break;
                         case R.id.navigation_subitem_1:
-                            String url = "https://namu.wiki/w/%EC%83%89%EA%B0%81%20%EC%9D%B4%EC%83%81";
-                            String url1 = "https://ko.wikipedia.org/wiki/%EC%83%89%EA%B0%81_%EC%9D%B4%EC%83%81";
-                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse((Math.random() < 0.5) ? url : url1));
+                            String url = "http://health.cdc.go.kr/health/HealthInfoArea/HealthInfo/View.do?idx=4550&page=1&sortType=date&dept=4&category_code=101105101109&category=1&searchField=titleAndSummary&searchWord=&dateSelect=1&fromDate=&toDate=";
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                             startActivity(browserIntent);
                             break;
                         case R.id.navigation_subitem_2:
@@ -282,6 +286,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                             Intent develop = new Intent(MainActivity.this, DeveloperActivity.class);
                             startActivity(develop);
                             break;
+                        case R.id.navigation_video :
+                            String utub = "https://drive.google.com/uc?authuser=0&id=0B3g_nHYN2CO-WjRKN0hxYTNZOEU&export=download";
+                            networkTask(utub);
+                            break;
+
 
                     }
                     drawerLayout.closeDrawers();
@@ -293,6 +302,48 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
 
         initCapture();
+    }
+
+    public void networkTask(String url) {
+        new AsyncTask<String, Void, String>() {
+            @Override
+            protected String doInBackground(String... params) {
+                String result = getData(params[0]);
+                return result;
+            }
+            @Override
+            protected void onPostExecute(String r) {
+                Log.e("RESULT", "결과 : " + r);
+                Intent youtubeIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(r));
+                startActivity(youtubeIntent);
+            }
+        }.execute(url);
+    }
+
+    public String getData(String url) {
+        StringBuilder result = new StringBuilder();
+        try {
+            // 1. 요청처리
+            URL serverUrl = new URL(url);
+            // 주소에 해당하는 서버의 소켓을 연결
+            HttpURLConnection con = (HttpURLConnection) serverUrl.openConnection();
+            // OutputStream으로 데이터 요청
+            con.setRequestMethod("GET");
+            // 2. 응답처리
+            // 응답의 유효성 검사
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String temp = "";
+                // readLine()을 하면 줄바꿈 표식이 모두 날라가 버린다.
+                while ((temp = br.readLine()) != null) {
+                    result.append(temp+"\n");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result.toString();
     }
 
     private void initCapture(){
@@ -523,13 +574,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     private void initUser(){
 
-        int result = PreferenceManager.getDefaultSharedPreferences(this).getInt("density", 50);
-        int density = 2000 - result * 10;
-        User.setDensity(density);
+        String result = PreferenceManager.getDefaultSharedPreferences(this).getString("density1", "1");
+        User.setDensity1(result);
         int result1 = PreferenceManager.getDefaultSharedPreferences(this).getInt("quality", 750);
         if(result1 == 0) result1 = 1;
         User.setQuality(result1);
-        String result2 = PreferenceManager.getDefaultSharedPreferences(this).getString("username", "코타나");
+        String result2 = PreferenceManager.getDefaultSharedPreferences(this).getString("username", "Cortana");
         User.setName(result2);
         int result3 = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("mode", "0"));
         User.setMode(result3);
@@ -625,7 +675,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 .setRationaleMessage(" 이 앱에서는 다른 앱 위에 그리기, 저장공간 권한을 정상적인 앱 구동을 위하여 필요로 합니다. 확인 메시지가 나올 시 동의로 체크해 주시기 바랍니다.\n 또한 스크린샷 캡쳐 기능을 사용하고자 하니 초기 실행시 '화면상의 모든 것을 캡쳐하시겠습니까' 메시지에 대하여 다시 묻지 않기로 '시작하기' 버튼을 눌러 주시기 바랍니다.")
                 .setPermissionListener(permissionlistener)
                 .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
-                .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.VIBRATE)
+                .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.VIBRATE, Manifest.permission.INTERNET)
                 .check();
 
 

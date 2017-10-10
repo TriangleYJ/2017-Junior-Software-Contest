@@ -1,5 +1,6 @@
 package com.yjprojects.jsctest2.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -80,10 +81,9 @@ public class SettingActivity extends PreferenceActivity implements SharedPrefere
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
-        if(key.equals("density")) {
-            int result = PreferenceManager.getDefaultSharedPreferences(this).getInt("density", 50);
-            int density = 2000 - result * 10;
-            User.setDensity(density);
+        if(key.equals("density1")) {
+            String result = PreferenceManager.getDefaultSharedPreferences(this).getString("density1", "1");
+            User.setDensity1(result);
         }
 
         if(key.equals("quality")) {
@@ -104,5 +104,13 @@ public class SettingActivity extends PreferenceActivity implements SharedPrefere
         }
     }
 
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        Intent main = new Intent(SettingActivity.this, MainActivity.class);
+        startActivity(main);
+        finish();
+    }
 
 }

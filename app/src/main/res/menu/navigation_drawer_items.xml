@@ -32,6 +32,11 @@
                     android:title="앱 소개" />
 
                 <item
+                    android:id="@+id/navigation_video"
+                    android:checked="false"
+                    android:title="영상 소개"/>
+
+                <item
                     android:id="@+id/navigation_subitem_3"
                     android:checked="false"
                     android:title="개발자 정보" />

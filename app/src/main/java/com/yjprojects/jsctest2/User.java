@@ -21,7 +21,7 @@ public class User {
     private static String name = "Cortana";
     private static int mode = MODE_NORMAL;
     private static int density = 1500; //lower is high density
-    private static int quality = 720; //higher is high quality
+    private static int quality = 750; //higher is high quality
 
 
     public static String getModeName(){
@@ -99,5 +99,12 @@ public class User {
 
     public static void setQuality(int quality) {
         User.quality = quality;
+    }
+
+    public static void setDensity1(String s){
+        if(s.equals("0")) setDensity(3000);
+        else if(s.equals("1")) setDensity(2500);
+        else if(s.equals("2")) setDensity(2000);
+        else if(s.equals("3")) setDensity(1500);
     }
 }

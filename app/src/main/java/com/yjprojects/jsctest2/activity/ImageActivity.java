@@ -270,7 +270,9 @@ public class ImageActivity extends AppCompatActivity {
         origin = bmp.copy(Bitmap.Config.ARGB_8888, true);
         Mat img = new Mat();
         Utils.bitmapToMat(bmp, img);
-        Mat rig = new Mat(img.rows(), img.cols(), img.type());
+
+        double scale = User.getQuality() / (double)Math.min(img.cols(), img.rows());
+        Mat rig = new Mat(img.rows(), (int) (img.cols() * scale), (int) (img.type() * scale));
 
         Mat a = drawable2M(R.drawable.strip2);
         Mat b = drawable2M(R.drawable.strip3);
@@ -278,6 +280,7 @@ public class ImageActivity extends AppCompatActivity {
         Mat d = drawable2M(R.drawable.xx);
 
         Convert(img.getNativeObjAddr(), rig.getNativeObjAddr(), a.getNativeObjAddr(), b.getNativeObjAddr(), c.getNativeObjAddr(), d.getNativeObjAddr(), User.getModeDetail(), User.getQuality());
+
 
         Bitmap bp = Bitmap.createBitmap(rig.cols(), rig.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(rig, bp);

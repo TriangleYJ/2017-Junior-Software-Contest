@@ -72,7 +72,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         holder.subtitle.setText(format1.format(date));
         if(data.getId() != null) {
             Picasso.with(context).load(Uri.fromFile(new File(data.getId())))
-                    .error(R.drawable.failed)
+                    .error(R.drawable.ic_crop_original_black_48dp)
                     .placeholder(R.drawable.ic_crop_original_black_48dp)
                     .centerCrop()
                     .resize(160, 160)
